@@ -1,7 +1,5 @@
 package com.example;
 
-import java.util.Arrays;
-
 public class Board {
     /**
      * Dimensions 1 indexed
@@ -60,28 +58,38 @@ public class Board {
             }
         }
     }
-
-    private GamePiece getSquareState(int row, int col) {
-        if (squares[row][col] == null) {
-            return null;
-        }
-        return new GamePiece(squares[row][col]);
-    }
-
+    
     public boolean move(Player p, int initRow, int initCol, int endRow, int endCol) {
+        // TODO: move helper call here so we can save time from rechecking
+        // Is King
+        if (squares[initRow][initCol] instanceof King) {
+            System.out.println("HERE");
+            if (isValidKingMove(p, initRow, initCol, endRow, endCol)) {
+                squares[endRow][endCol] = squares[initRow][initCol];
+                squares[initRow][initCol] = null;
+                return true;
+            } else if (isValidKingKillMove(p, initRow, initCol, endRow, endCol)) {
+                // Seperated because eventually this will alow the peice to move to attack again
+                squares[endRow][endCol] = squares[initRow][initCol];
+                squares[initRow][initCol] = null;
+                return true;
+            }
+        }
+
+        // Is Pawn or invalid King move FIXME: Figure out instanceof then make this only pawn
         if (isValidPawnMove(p, initRow, initCol, endRow, endCol)) {
             squares[endRow][endCol] = squares[initRow][initCol];
             squares[initRow][initCol] = null;
             isMakeKing(endRow, endCol);
             return true;
         } else if (isValidPawnKillMove(p, initRow, initCol, endRow, endCol)) {
-            // TODO: Special sitaution where you can hop again with this piece
-            // Killed pawn in removed by isValid method. Not ideal but I'm getting lazy 
+            // Seperated because eventually this will alow the peice to move to attack again
             squares[endRow][endCol] = squares[initRow][initCol];
             squares[initRow][initCol] = null;
             isMakeKing(endRow, endCol);
             return true;
         }
+
         return false;
     }
 
@@ -101,13 +109,13 @@ public class Board {
             throw new IllegalArgumentException("Values must be postive");
         }
 
-        // Target position must be real and empty 
+        // Target position must be real and empty. Also does not allow for non moves.
         if (endRow > squares.length || endCol > squares.length || (squares[endRow][endCol] != null)) {
             return false;
         }
 
         // Piece must exist in given location and be the players color
-        if ((getSquareState(initRow, initCol) == null) || (squares[initRow][initCol].getColor() != p.getColor())) {
+        if ((squares[initRow][initCol] == null) || (squares[initRow][initCol].getColor() != p.getColor())) {
             return false;
         }
 
@@ -127,6 +135,7 @@ public class Board {
      * @throws IllegalArgumentException if any input value is less than zero
      */
     private boolean isValidPawnMove(Player p, int initRow, int initCol, int endRow, int endCol) {
+        // Move must be real and applied to a pawn
         if (!isValidMoveHelper(p, initRow, initCol, endRow, endCol)) {
             return false;
         }
@@ -149,18 +158,19 @@ public class Board {
     }
 
     private boolean isValidPawnKillMove(Player p, int initRow, int initCol, int endRow, int endCol) {
+        // Move must be real and applied to a pawn
         if (!isValidMoveHelper(p, initRow, initCol, endRow, endCol)) {
             return false;
         }
 
         // If attempting to move up right as BLACK... else up left as BLACK
         if ((endRow == initRow - 2) && (endCol == initCol + 2) && p.getColor() == GamePiece.Color.BLACK) {
-            if (getSquareState(initRow - 1, initCol + 1).getColor() != p.getColor()) {
+            if (squares[initRow - 1][initCol + 1].getColor() != p.getColor()) {
                 squares[initRow - 1][initCol + 1] = null;
                 return true;
             }
         } else if ((endRow == initRow - 2) && (endCol == initCol - 2) && p.getColor() == GamePiece.Color.BLACK) {
-            if (getSquareState(initRow - 1, initCol - 1).getColor() != p.getColor()) {
+            if (squares[initRow - 1][initCol - 1].getColor() != p.getColor()) {
                 squares[initRow - 1][initCol - 1] = null;
                 return true;
             }
@@ -168,12 +178,12 @@ public class Board {
 
         // If attempting to move down right as RED... else down left as RED
         if ((endRow == initRow + 2) && (endCol == initCol + 2) && p.getColor() == GamePiece.Color.RED) {
-            if (getSquareState(initRow + 1, initCol + 1).getColor() != p.getColor()) {
+            if (squares[initRow + 1][initCol + 1].getColor() != p.getColor()) {
                 squares[initRow + 1][initCol + 1] = null;
                 return true;
             }
         } else if ((endRow == initRow + 2) && (endCol == initCol - 2) && p.getColor() == GamePiece.Color.RED) {
-            if (getSquareState(initRow + 1, initCol - 1).getColor() != p.getColor()) {
+            if (squares[initRow + 1][initCol - 1].getColor() != p.getColor()) {
                 squares[initRow + 1][initCol - 1] = null;
                 return true;
             }
@@ -181,15 +191,73 @@ public class Board {
 
         return false;
     }
-    
+
+    private boolean isValidKingMove(Player p, int initRow, int initCol, int endRow, int endCol) {
+        // Move must be real and applied to a king
+        if (!isValidMoveHelper(p, initRow, initCol, endRow, endCol)) {
+            return false;
+        }
+        
+        System.out.println(squares[7][2] instanceof King);
+
+        return Math.abs(endRow - initRow) <= 1 && Math.abs(endCol - initCol) <= 1;
+    }
+
+    private boolean isValidKingKillMove(Player p, int initRow, int initCol, int endRow, int endCol) {
+        // Move must be real and applied to a pawn
+        if (!isValidMoveHelper(p, initRow, initCol, endRow, endCol)) {
+            return false;
+        }
+
+        // If attempting to move up right... else up left
+        if ((endRow == initRow - 2) && (endCol == initCol + 2)) {
+            if (squares[initRow - 1][initCol + 1].getColor() != p.getColor()) {
+                squares[initRow - 1][initCol + 1] = null;
+                return true;
+            }
+        } else if ((endRow == initRow - 2) && (endCol == initCol - 2)) {
+            if (squares[initRow - 1][initCol - 1].getColor() != p.getColor()) {
+                squares[initRow - 1][initCol - 1] = null;
+                return true;
+            }
+        }
+
+        // If attempting to move down right... else down left
+        if ((endRow == initRow + 2) && (endCol == initCol + 2)) {
+            if (squares[initRow + 1][initCol + 1].getColor() != p.getColor()) {
+                squares[initRow + 1][initCol + 1] = null;
+                return true;
+            }
+        } else if ((endRow == initRow + 2) && (endCol == initCol - 2)) {
+            if (squares[initRow + 1][initCol - 1].getColor() != p.getColor()) {
+                squares[initRow + 1][initCol - 1] = null;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private boolean isMakeKing(int row, int col) {
-        if (((row == 0) && (getSquareState(row, col).getColor() == GamePiece.Color.BLACK))
-                || ((row == 7) && (getSquareState(row, col).getColor() == GamePiece.Color.RED))) {
+        if (((row == 0) && (squares[row][col].getColor() == GamePiece.Color.BLACK))
+                || ((row == 7) && (squares[row][col].getColor() == GamePiece.Color.RED))) {
             squares[row][col] = new King(squares[row][col].getColor());
             return true;
         }
         return false;
     }
+
+    public int countPieces(GamePiece.Color color) {
+        int count = 0;
+        for (int i = 0; i < squares.length; i++) {
+            for (int j = 0; j < squares[i].length; j++) {
+                if ((squares[i][j] != null) && (squares[i][j].getColor() == color)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    } 
 
     @Override
     public String toString() {

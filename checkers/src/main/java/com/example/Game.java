@@ -1,10 +1,15 @@
 package com.example;
 
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
 public class Game {
     private Board board;
     private Player p1; // Black
     private Player p2; // Red
     private Player currentPlayer;
+
+    private Scanner scanner; // For Debugging only
 
     public Game(Player p1, Player p2) {
         this.p1 = p1;
@@ -16,28 +21,37 @@ public class Game {
     public void initialize() {
         board.initialize();
         currentPlayer = p1;
-        // play();
+        play();
     }
 
     private void play() {
         while (!isOver()) {
-            // takeTurn(currentPlayer);
+            System.out.println(this);
+            takeTurn(currentPlayer);
             switchPlayer();
         }
     }
 
-    private void takeTurn() {
-        System.out.println(board.move(p1, 5, 2, 4, 3));
-        System.out.println(board.move(p2, 2, 5, 3, 4));
+    private void takeTurn(Player p) {
+        this.scanner = new Scanner(System.in);
 
-        System.out.println(board.move(p1, 6, 3, 5, 2));
-        System.out.println(board.move(p1, 5, 2, 4, 1));
-        System.out.println(board.move(p1, 7, 4, 6, 3));
-        
-        System.out.println(board.move(p2, 3, 4, 5, 2));
-        System.out.println(board.move(p2, 5, 2, 7, 4));
-
-        System.out.println();
+        int initRow = -1, initCol = -1, endRow = -1, endCol = -1;
+        System.out.println(p.getName() + ", enter move (format: startRow startCol endRow endCol): ");
+        try {
+            initRow = scanner.nextInt();
+            initCol = scanner.nextInt();
+            endRow = scanner.nextInt();
+            endCol = scanner.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter only integers.");
+            scanner.next();
+            takeTurn(p);
+        }
+        boolean attempt = board.move(p, initRow, initCol, endRow, endCol);
+        if (attempt == false) {
+            System.out.println("Invalid move");
+            takeTurn(p);
+        }
     }
 
     private void switchPlayer() {
@@ -45,6 +59,13 @@ public class Game {
     }
 
     private boolean isOver() {
+        if (board.countPieces(GamePiece.Color.BLACK) == 0) {
+            System.out.println("Black wins.");
+            return true;
+        } else if (board.countPieces(GamePiece.Color.RED) == 0) {
+            System.out.println("Red wins.");
+            return true;
+        }
         return false;
     }
 
@@ -56,8 +77,6 @@ public class Game {
     public static void main(String[] args) {
         Game game = new Game(new Player("Player 1", GamePiece.Color.BLACK),new Player("Player 2", GamePiece.Color.RED));
         game.initialize();
-        System.out.println(game);
-        game.takeTurn();
-        System.out.println(game);
+        game.play();
     }
 }
