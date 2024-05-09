@@ -6,11 +6,10 @@ public class Board {
     /**
      * Dimensions 1 indexed
      */
-    private int x;
+    private int x; //TODO: remove these they're not needed
     private int y;
 
-    private GamePiece[][] squares; // top left 0,0 y,x TODO: swap x and y or rename to row and column
-
+    private GamePiece[][] squares; // top left 0,0 row,column
     /**
      * Create standard size checkers board
      */
@@ -18,6 +17,7 @@ public class Board {
         this(8, 8);
     }
 
+    // TODO: Remove this switch to only standard board
     /**
      * Create board of given positive non-zero dimensions.
      * 
@@ -39,10 +39,6 @@ public class Board {
      * Initialize game pieces on board. Must be 8x8.
      */
     public void initialize() {
-        if (x != 8 || y != 8) {
-            throw new UnsupportedOperationException("Board must be standard 8x8 to initialize");
-        }
-
         // Clear board
         for (int i = 0; i < squares.length; i++) {
             for (int j = 0; j < squares[i].length; j++) {
@@ -65,79 +61,136 @@ public class Board {
         }
     }
 
-    private GamePiece getSquareState(int x, int y) {
-        if (squares[x][y] == null) {
+    private GamePiece getSquareState(int row, int col) {
+        if (squares[row][col] == null) {
             return null;
         }
-        return new GamePiece(squares[x][y]);
+        return new GamePiece(squares[row][col]);
     }
 
-    public boolean move(Player p, int initX, int initY, int endX, int endY) {
-        if (isValidMove(p, initX, initY, endX, endY)) {
-            squares[endX][endY] = squares[initX][initY];
-            squares[initX][initY] = null;
+    public boolean move(Player p, int initRow, int initCol, int endRow, int endCol) {
+        if (isValidPawnMove(p, initRow, initCol, endRow, endCol)) {
+            squares[endRow][endCol] = squares[initRow][initCol];
+            squares[initRow][initCol] = null;
+            return true;
+        } else if (isValidPawnKillMove(p, initRow, initCol, endRow, endCol)) {
+            // TODO: Special sitaution where you can hop again with this piece
+            // Killed pawn in removed by isValid method. Not ideal but I'm getting lazy 
+            squares[endRow][endCol] = squares[initRow][initCol];
+            squares[initRow][initCol] = null;
             return true;
         }
         return false;
     }
 
-    // TODO: Incomplete. Just starting with basic rules. No kills or king movement
     /**
+     * Prelim check for all moves to save space. A move validated by this method is not yet valid.
      * 
      * @param p Player attempting the move. Will need to match the game peice they are moving 
-     * @param initX Start x position
-     * @param initY Start y position
-     * @param endX End x position
-     * @param endY End y position
+     * @param initRow Start row position
+     * @param initCol Start column position
+     * @param endRow End row position
+     * @param endCol End column position
      * @return True if the move is legal and false otherwise
      * @throws IllegalArgumentException if any input value is less than zero
      */
-    private boolean isValidMove(Player p, int initX, int initY, int endX, int endY) {
-        if (initX < 0 || initY < 0 || endX < 0 || endY < 0) {
+    private boolean isValidMoveHelper(Player p, int initRow, int initCol, int endRow, int endCol) {
+        if (initRow < 0 || initCol < 0 || endRow < 0 || endCol < 0) {
             throw new IllegalArgumentException("Values must be postive");
         }
 
         // Target position must be real and empty 
-        if (endX > squares.length || endY > squares.length || (squares[endX][endY] != null)) {
-            System.out.println("HELLO");
+        if (endRow > squares.length || endCol > squares.length || (squares[endRow][endCol] != null)) {
             return false;
         }
 
         // Piece must exist in given location and be the players color
-        if ((getSquareState(initX, initY) == null) || (squares[initX][initY].getColor() != p.getColor())) {
-            return false;
-        }
-
-        // End x must be +1 to either the left or right and end Y must be +1 above.
-        if (!((endX == initX + 1) || (endX == initX - 1)) || (endY != initY + 1)) {
+        if ((getSquareState(initRow, initCol) == null) || (squares[initRow][initCol].getColor() != p.getColor())) {
             return false;
         }
 
         return true;
     }
 
-    private void debugDisplay() {
-        for (int i = 0; i < squares.length; i++) {
-            for (int j = 0; j < squares[i].length; j++) {
-                if (squares[i][j] == null) {
-                    System.out.print("- ");
-                } else {
-                    System.out.print(squares[i][j] + " ");
-                }
-            }
-            System.out.println();
+    /**
+     * Check that standard pawn move is valid. All peices can make pawn moves but this method does
+     * not apply to jumps/kills or king only moves.
+     * 
+     * @param p Player attempting the move. Will need to match the game peice they are moving 
+     * @param initRow Start row position
+     * @param initCol Start column position
+     * @param endRow End row position
+     * @param endCol End col position
+     * @return True if the move is legal and false otherwise
+     * @throws IllegalArgumentException if any input value is less than zero
+     */
+    private boolean isValidPawnMove(Player p, int initRow, int initCol, int endRow, int endCol) {
+        if (!isValidMoveHelper(p, initRow, initCol, endRow, endCol)) {
+            return false;
         }
+
+        // If BLACK, end x must be one to left or right and one up and be black 
+        if (((endCol == initCol + 1) || (endCol == initCol - 1))
+                && (endRow == initRow - 1)
+                && (p.getColor() == GamePiece.Color.BLACK)) {
+            return true;
+        }
+        
+        // If RED, end x must be one to left or right and one down and be black 
+        if (((endCol == initCol + 1) || (endCol == initCol - 1))
+                && (endRow == initRow + 1)
+                && (p.getColor() == GamePiece.Color.RED)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isValidPawnKillMove(Player p, int initRow, int initCol, int endRow, int endCol) {
+        if (!isValidMoveHelper(p, initRow, initCol, endRow, endCol)) {
+            return false;
+        }
+
+        // If attempting to move up right as BLACK... else up left as BLACK
+        if ((endRow == initRow - 2) && (endCol == initCol + 2) && p.getColor() == GamePiece.Color.BLACK) {
+            if (getSquareState(initRow - 1, initCol + 1).getColor() != p.getColor()) {
+                squares[initRow - 1][initCol + 1] = null;
+                return true;
+            }
+        } else if ((endRow == initRow - 2) && (endCol == initCol - 2) && p.getColor() == GamePiece.Color.BLACK) {
+            if (getSquareState(initRow - 1, initCol - 1).getColor() != p.getColor()) {
+                squares[initRow - 1][initCol - 1] = null;
+                return true;
+            }
+        }
+        
+        // If attempting to move down right as RED... else down left as RED
+        if ((endRow == initRow + 2) && (endCol == initCol + 2) && p.getColor() == GamePiece.Color.RED) {
+            if (getSquareState(initRow + 1, initCol + 1).getColor() != p.getColor()) {
+                squares[initRow + 1][initCol + 1] = null;
+                return true;
+            }
+        } else if ((endRow == initRow + 2) && (endCol == initCol - 2) && p.getColor() == GamePiece.Color.RED) {
+            if (getSquareState(initRow + 1, initCol - 1).getColor() != p.getColor()) {
+                squares[initRow + 1][initCol - 1] = null;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
     public String toString() {
-        String val = "";
+        String val = "row/col == [row][col]\n  0 1 2 3 4 5 6 7\n";
         for (int i = 0; i < squares.length; i++) {
+            val += i + " ";
             for (int j = 0; j < squares[i].length; j++) {
                 if (squares[i][j] == null) {
                     val += "- ";
                 } else {
                     val += squares[i][j] + " ";
+                    // val += i + "," + j;
                 }
             }
             val += "\n";

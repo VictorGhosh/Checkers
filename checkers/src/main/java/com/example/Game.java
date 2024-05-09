@@ -27,8 +27,10 @@ public class Game {
     }
 
     private void takeTurn() {
-        System.out.println("Moving 5,2 to 4,3 for " + p1);
         System.out.println(board.move(p1, 5, 2, 4, 3));
+        System.out.println(board.move(p2, 2, 5, 3, 4));
+        System.out.println(board.move(p2, 3, 4, 5, 2));
+        System.out.println();
     }
 
     private void switchPlayer() {
@@ -41,7 +43,7 @@ public class Game {
 
     @Override
     public String toString() {
-        return p1 + "\n" + p2 + "\n" + board;
+        return p1 + " vs " + p2 + "\n" + board;
     }
 
     public static void main(String[] args) {
