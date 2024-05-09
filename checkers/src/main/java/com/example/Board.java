@@ -72,12 +72,14 @@ public class Board {
         if (isValidPawnMove(p, initRow, initCol, endRow, endCol)) {
             squares[endRow][endCol] = squares[initRow][initCol];
             squares[initRow][initCol] = null;
+            isMakeKing(endRow, endCol);
             return true;
         } else if (isValidPawnKillMove(p, initRow, initCol, endRow, endCol)) {
             // TODO: Special sitaution where you can hop again with this piece
             // Killed pawn in removed by isValid method. Not ideal but I'm getting lazy 
             squares[endRow][endCol] = squares[initRow][initCol];
             squares[initRow][initCol] = null;
+            isMakeKing(endRow, endCol);
             return true;
         }
         return false;
@@ -163,7 +165,7 @@ public class Board {
                 return true;
             }
         }
-        
+
         // If attempting to move down right as RED... else down left as RED
         if ((endRow == initRow + 2) && (endCol == initCol + 2) && p.getColor() == GamePiece.Color.RED) {
             if (getSquareState(initRow + 1, initCol + 1).getColor() != p.getColor()) {
@@ -177,6 +179,15 @@ public class Board {
             }
         }
 
+        return false;
+    }
+    
+    private boolean isMakeKing(int row, int col) {
+        if (((row == 0) && (getSquareState(row, col).getColor() == GamePiece.Color.BLACK))
+                || ((row == 7) && (getSquareState(row, col).getColor() == GamePiece.Color.RED))) {
+            squares[row][col] = new King(squares[row][col].getColor());
+            return true;
+        }
         return false;
     }
 

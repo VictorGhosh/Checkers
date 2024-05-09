@@ -29,7 +29,14 @@ public class Game {
     private void takeTurn() {
         System.out.println(board.move(p1, 5, 2, 4, 3));
         System.out.println(board.move(p2, 2, 5, 3, 4));
+
+        System.out.println(board.move(p1, 6, 3, 5, 2));
+        System.out.println(board.move(p1, 5, 2, 4, 1));
+        System.out.println(board.move(p1, 7, 4, 6, 3));
+        
         System.out.println(board.move(p2, 3, 4, 5, 2));
+        System.out.println(board.move(p2, 5, 2, 7, 4));
+
         System.out.println();
     }
 

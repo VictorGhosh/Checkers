@@ -10,6 +10,6 @@ public class King extends GamePiece {
      */
     @Override
     public String toString() {
-        return super.color.toString().charAt(0) + "K";
+        return super.toString() + "K";
     }
 }
