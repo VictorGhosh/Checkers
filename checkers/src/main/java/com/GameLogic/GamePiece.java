@@ -1,18 +1,19 @@
-package com.example;
+package com.GameLogic;
 
+/**
+ * All game pieces. Kings are inhereted from this/
+ */
 public class GamePiece {
     public enum Color {
         RED, BLACK;
 
-        /**
-         * String will be either R or B for readability
-         */
         @Override
         public String toString() {
             return this.name().charAt(0) + "";
         }
     }
 
+    // Accessible for Kings class 
     protected Color color;
 
     public GamePiece(Color color) {

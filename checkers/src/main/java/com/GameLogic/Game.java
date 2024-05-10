@@ -1,4 +1,4 @@
-package com.example;
+package com.GameLogic;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -73,7 +73,7 @@ public class Game {
     public String toString() {
         return p1 + " vs " + p2 + "\n" + board;
     }
-
+    
     public static void main(String[] args) {
         Game game = new Game(new Player("Player 1", GamePiece.Color.BLACK),new Player("Player 2", GamePiece.Color.RED));
         game.initialize();

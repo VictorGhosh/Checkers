@@ -1,8 +1,8 @@
-package com.example;
+package com.GameLogic;
 
 public class Player {
     private String name;
-    private GamePiece.Color color; //FIXME: Should Color enum be seperate from GamePiece?
+    private GamePiece.Color color;
 
     public Player(String name, GamePiece.Color color) {
         this.name = name;
@@ -16,10 +16,7 @@ public class Player {
     public GamePiece.Color getColor() {
         return color;
     }
-
-    /**
-     * String debug is player name + their color
-     */
+    
     @Override
     public String toString() {
         return name + "-" + color.toString();
