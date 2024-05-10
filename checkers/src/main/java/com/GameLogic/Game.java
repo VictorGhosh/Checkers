@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 public class Game {
     private Board board;
-    private Player p1; // Black
-    private Player p2; // Red
+    private final Player p1; // Black
+    private final Player p2; // Red
     private Player currentPlayer;
 
     private Scanner scanner; // For Debugging only

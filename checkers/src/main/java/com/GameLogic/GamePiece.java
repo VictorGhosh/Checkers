@@ -4,7 +4,7 @@ package com.GameLogic;
  * All game pieces. Kings are inhereted from this/
  */
 public class GamePiece {
-    public enum Color {
+    public static enum Color {
         RED, BLACK;
 
         @Override
@@ -14,7 +14,7 @@ public class GamePiece {
     }
 
     // Accessible for Kings class 
-    protected Color color;
+    protected final Color color;
 
     public GamePiece(Color color) {
         this.color = color;

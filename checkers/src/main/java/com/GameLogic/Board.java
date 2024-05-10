@@ -270,6 +270,22 @@ public class Board {
     }
 
     /**
+     * Getter method returns reference to GamePiece object at location or null if there
+     * is no piece. Remember to cast to king if applicable (not used here because of that).
+     * 
+     * @param row
+     * @param col
+     * @throws IllegalArgumentException if col or row are out of bounds or negative
+     * @return Piece at [row][col]
+     */
+    public GamePiece getSquare(int row, int col) {
+        if (row < 0 || row > squares.length || col < 0 || col > squares.length) {
+            throw new IllegalArgumentException();
+        }
+        return squares[row][col];
+    }
+
+    /**
      * Should only be used in debugging
      */
     @Override

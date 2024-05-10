@@ -1,8 +1,8 @@
 package com.GameLogic;
 
 public class Player {
-    private String name;
-    private GamePiece.Color color;
+    private final String name;
+    private final GamePiece.Color color;
 
     public Player(String name, GamePiece.Color color) {
         this.name = name;
