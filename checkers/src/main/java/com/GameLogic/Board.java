@@ -1,4 +1,4 @@
-package com.example;
+package com.GameLogic;
 
 public class Board {
     /**
