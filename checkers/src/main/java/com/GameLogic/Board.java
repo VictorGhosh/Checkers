@@ -1,5 +1,7 @@
 package com.GameLogic;
 
+import java.util.Arrays;
+
 public class Board {
     // Top left 0,0 [row][column]
     private GamePiece[][] squares;
@@ -130,7 +132,7 @@ public class Board {
      */
     private boolean isValidPawnMove(Player p, int initRow, int initCol, int endRow, int endCol) {
         // Allow to move one to the left or right
-        if (Math.abs(endCol - initCol) <= 1) {
+        if (Math.abs(endCol - initCol) == 1) {
             // BLACK moves up
             if ((endRow == initRow - 1) && (p.getColor() == GamePiece.Color.BLACK)) {
                 return true;
@@ -283,6 +285,10 @@ public class Board {
             throw new IllegalArgumentException();
         }
         return squares[row][col];
+    }
+
+    public GamePiece[][] getBoard() {
+        return Arrays.copyOf(squares, squares.length);
     }
 
     /**

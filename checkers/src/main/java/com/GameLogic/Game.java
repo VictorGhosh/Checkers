@@ -9,56 +9,35 @@ public class Game {
     private final Player p2; // Red
     private Player currentPlayer;
 
-    private Scanner scanner; // For Debugging only
-
     public Game(Player p1, Player p2) {
         this.p1 = p1;
         this.p2 = p2;
         this.currentPlayer = p1;
         this.board = new Board();
     }
+
+    public Game(String p1Name, String p2Name) {
+        this(new Player(p1Name, GamePiece.Color.BLACK), new Player(p2Name, GamePiece.Color.RED));
+    }
     
     public void initialize() {
         board.initialize();
         currentPlayer = p1;
-        play();
     }
 
-    private void play() {
-        while (!isOver()) {
-            System.out.println(this);
-            takeTurn(currentPlayer);
+    public boolean takeTurn(int initRow, int initCol, int endRow, int endCol) {
+        boolean wasMoved = board.move(currentPlayer, initRow, initCol, endRow, endCol);
+        if (wasMoved) {
             switchPlayer();
         }
-    }
-
-    private void takeTurn(Player p) {
-        this.scanner = new Scanner(System.in);
-
-        int initRow = -1, initCol = -1, endRow = -1, endCol = -1;
-        System.out.println(p.getName() + ", enter move (format: startRow startCol endRow endCol): ");
-        try {
-            initRow = scanner.nextInt();
-            initCol = scanner.nextInt();
-            endRow = scanner.nextInt();
-            endCol = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid input. Please enter only integers.");
-            scanner.next();
-            takeTurn(p);
-        }
-        boolean attempt = board.move(p, initRow, initCol, endRow, endCol);
-        if (attempt == false) {
-            System.out.println("Invalid move");
-            takeTurn(p);
-        }
+        return wasMoved;
     }
 
     private void switchPlayer() {
         this.currentPlayer = (currentPlayer == p1) ? p2 : p1;
     }
 
-    private boolean isOver() {
+    public boolean isOver() {
         if (board.countPieces(GamePiece.Color.BLACK) == 0) {
             System.out.println("Black wins.");
             return true;
@@ -69,14 +48,12 @@ public class Game {
         return false;
     }
 
+    public GamePiece[][] getBoard() {
+        return board.getBoard();
+    }
+
     @Override
     public String toString() {
         return p1 + " vs " + p2 + "\n" + board;
-    }
-    
-    public static void main(String[] args) {
-        Game game = new Game(new Player("Player 1", GamePiece.Color.BLACK),new Player("Player 2", GamePiece.Color.RED));
-        game.initialize();
-        game.play();
     }
 }
