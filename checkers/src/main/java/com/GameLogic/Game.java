@@ -52,6 +52,18 @@ public class Game {
         return board.getBoard();
     }
 
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public Player[] getPlayers() {
+        return new Player[]{p1, p2};
+    }
+
+    public int countPieces(GamePiece.Color color) {
+        return board.countPieces(color);
+    }
+
     @Override
     public String toString() {
         return p1 + " vs " + p2 + "\n" + board;

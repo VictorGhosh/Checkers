@@ -1,0 +1,22 @@
+.sidebar {
+    -fx-background-color: #336699;
+    -fx-padding: 10px;
+    -fx-spacing: 10px; /*This affects spacing in a VBox */
+    -fx-alignment: center;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-width: 2;
+}
+
+.score-label {
+    /* -fx-font-size: 16px; */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.turn-label {
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 10);
+}

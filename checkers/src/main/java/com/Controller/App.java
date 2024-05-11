@@ -2,7 +2,10 @@ package com.Controller;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -19,32 +22,40 @@ public class App extends Application {
 
     private static final int scale = 100;
 
-    private Pane root;
-
-    private Game game;
-    private Rectangle activeSquare;
-
-    private String p1Name;
+    // GUI Elements
+    private BorderPane root;
+    private Pane boardPane;
+    private Label turnLabel;
+    private Label p1ScoreLabel;
+    private Label p2ScoreLabel;
+    private Rectangle activeSquare; // For yellow highlighting
+    private String p1Name; // FIXME: Remove these and ask Game instead
     private String p2Name;
 
+    private Game game;
     private int initRow = -1;
     private int initCol = -1;
 
     @Override
     public void start(Stage primaryStage) {
-        this.root = new Pane();
+        this.root = new BorderPane();
+        this.boardPane = new Pane();
+        initializeBoard();
+        initializeSidebar();
+        root.setLeft(boardPane);
 
-        Scene scene = new Scene(root, 800, 800);
-        primaryStage.setTitle("Checkers Game");
+        Scene scene = new Scene(root, 1000, 800);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        primaryStage.setTitle("Checkers");
         primaryStage.setScene(scene);
 
-        initializeBoard();
         updateBoard();
-
+        updateSidebar();
         primaryStage.show();
     }
 
     public void initializeBoard() {
+        // FIXME: Move these
         this.p1Name = "Player 1";
         this.p2Name = "Player 2";
         this.game = new Game(p1Name, p2Name);
@@ -61,6 +72,22 @@ public class App extends Application {
         }
     }
 
+    private void initializeSidebar() {
+        VBox sidebar = new VBox(10);
+        // sidebar.setPadding(new Insets(15));
+        sidebar.getStyleClass().add("sidebar");
+
+        turnLabel = new Label();
+        turnLabel.getStyleClass().add("turn-label");
+        p1ScoreLabel = new Label();
+        p1ScoreLabel.getStyleClass().add("score-label");
+        p2ScoreLabel = new Label();
+        p2ScoreLabel.getStyleClass().add("score-label");
+        
+        sidebar.getChildren().addAll(turnLabel, p1ScoreLabel, p2ScoreLabel);
+        root.setRight(sidebar);
+    }
+    
     /**
      * FIXME: Redrawing all game pieces every update is not good but I'm lazy
      */
@@ -80,7 +107,8 @@ public class App extends Application {
                     if (gamePiece instanceof King) {
                         int pal[][] = new int[][] { { 20, 1 }, { -20, 1 }, { 1, 20 }, { 1, -20 } };
                         for (int k = 0; k < pal.length; k++) {
-                            Circle palImage = new Circle((scale * j + scale / 2) + pal[k][0], (scale * i + scale / 2) + pal[k][1], 10);
+                            Circle palImage = new Circle((scale * j + scale / 2) + pal[k][0],
+                                    (scale * i + scale / 2) + pal[k][1], 10);
                             palImage.setFill(Color.GOLD);
                             root.getChildren().add((palImage));
                         }
@@ -96,6 +124,16 @@ public class App extends Application {
             }
         }
     }
+    
+    private void updateSidebar() {
+        turnLabel.setText(game.getCurrentPlayer().getName() + "'s Turn");
+        
+        p1ScoreLabel.setText(game.getPlayers()[0].getName() + ": "
+                + game.countPieces(game.getPlayers()[0].getColor()) + " pieces");
+        p2ScoreLabel.setText(game.getPlayers()[1].getName() + ": "
+                + game.countPieces(game.getPlayers()[1].getColor()) + " pieces");
+    }
+
 
     private void squareClicked(javafx.scene.input.MouseEvent event, Rectangle square) {
         if (initRow < 0 && initCol < 0) {
@@ -115,6 +153,7 @@ public class App extends Application {
             this.initRow = -1;
             this.initCol = -1;
             updateBoard();
+            updateSidebar();
         }
     }
     
