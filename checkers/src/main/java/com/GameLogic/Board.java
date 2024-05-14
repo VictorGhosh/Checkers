@@ -58,8 +58,11 @@ public class Board {
             return false;
         }
 
+        System.out.println(squares[initRow][initCol].getClass());
+
         // Is King
         if (squares[initRow][initCol] instanceof King) {
+            System.out.println("IS A KING");
             if (isValidKingMove(p, initRow, initCol, endRow, endCol)) {
                 squares[endRow][endCol] = squares[initRow][initCol];
                 squares[initRow][initCol] = null;

@@ -1,8 +1,5 @@
 package com.GameLogic;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
-
 public class Game {
     private Board board;
     private final Player p1; // Black
@@ -26,6 +23,7 @@ public class Game {
     }
 
     public boolean takeTurn(int initRow, int initCol, int endRow, int endCol) {
+        System.out.println("From Game: " + initRow + ", " + initCol + " -> " + endRow + ", " + endCol);
         boolean wasMoved = board.move(currentPlayer, initRow, initCol, endRow, endCol);
         if (wasMoved) {
             switchPlayer();

@@ -1,21 +1,21 @@
 package com.Controller;
 
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+
+import java.io.FileInputStream;
 
 import com.GameLogic.Game;
 import com.GameLogic.GamePiece; // FIXME: This should not be here
@@ -107,6 +107,7 @@ public class App extends Application {
     private void updateBoard() {
         GamePiece[][] board = game.getBoard();
         root.getChildren().removeIf(node -> node instanceof Circle);
+        root.getChildren().removeIf(node -> node instanceof ImageView);
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -118,20 +119,13 @@ public class App extends Application {
                     root.getChildren().add(piece);
 
                     if (gamePiece instanceof King) {
-                        int pal[][] = new int[][] { { 20, 1 }, { -20, 1 }, { 1, 20 }, { 1, -20 } };
-                        for (int k = 0; k < pal.length; k++) {
-                            Circle palImage = new Circle((scale * j + scale / 2) + pal[k][0],
-                                    (scale * i + scale / 2) + pal[k][1], 10);
-                            palImage.setFill(Color.GOLD);
-                            root.getChildren().add((palImage));
-                        }
-                        Circle base = new Circle((scale * j + scale / 2), (scale * i + scale / 2), 20);
-                        base.setFill(Color.GOLD);
-                        root.getChildren().add(base);
-
-                        Circle hole = new Circle((scale * j + scale / 2), (scale * i + scale / 2), 15);
-                        hole.setFill(gamePiece.getColor() == GamePiece.Color.BLACK ? Color.BLACK : Color.RED);
-                        root.getChildren().add(hole);
+                        Image crownImage = new Image("/crown.png");
+                        ImageView crown = new ImageView(crownImage);
+                        crown.setFitHeight(60);
+                        crown.setFitWidth(60);
+                        crown.setX(scale * j + scale / 2 - crown.getFitWidth() / 2);
+                        crown.setY(scale * i + scale / 2 - crown.getFitHeight() / 2 - 2);
+                        root.getChildren().add(crown);
                     }
                     piece.setOnMouseClicked(event -> onCircleClick(event));
                 }
@@ -202,7 +196,6 @@ public class App extends Application {
         for (Node node : boardPane.getChildren()) {
             if (node instanceof Rectangle) {
                 Rectangle rect = (Rectangle) node;
-                System.out.println(rect.getX() + ", " + rect.getY());
                 if (rect.getX() == row * 100 && rect.getY() == col * 100) {
                     rect.setStroke(Color.GOLD);
                     rect.setStrokeWidth(5);
