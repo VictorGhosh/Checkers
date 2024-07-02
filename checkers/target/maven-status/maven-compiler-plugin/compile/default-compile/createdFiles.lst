@@ -1,0 +1,10 @@
+com\GameLogic\Board.class
+com\GameLogic\Player.class
+com\Controller\App.class
+com\GameLogic\Game.class
+com\GameLogic\GameDebugger.class
+com\GameLogic\King.class
+com\Controller\Chip.class
+module-info.class
+com\GameLogic\GamePiece$Color.class
+com\GameLogic\GamePiece.class
