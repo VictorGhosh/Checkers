@@ -14,7 +14,7 @@ public class GameDebugger {
     public GameDebugger(Player p1, Player p2) {
         this.p1 = p1;
         this.p2 = p2;
-        this.currentPlayer = p1;
+        this.currentPlayer = p1;        
         this.board = new Board();
     }
     
@@ -45,6 +45,9 @@ public class GameDebugger {
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter only integers.");
             scanner.next();
+
+            System.out.println(board.getJson());
+
             takeTurn(p);
         }
         boolean attempt = board.move(p, initRow, initCol, endRow, endCol);
