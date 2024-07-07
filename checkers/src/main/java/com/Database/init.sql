@@ -4,8 +4,8 @@ CREATE DATABASE checkersDB;
 USE checkersDB;
 
 CREATE TABLE Player(
-    Id       INTEGER        NOT NULL,
-    PName    VARCHAR(32)    NOT NULL,
-    Pass     VARCHAR(32)            ,
-    PRIMARY KEY(Id)
+    id       INTEGER        AUTO_INCREMENT,
+    pName    VARCHAR(255)   NOT NULL,
+    pass     VARCHAR(255)   ,
+    PRIMARY KEY(id)
 );
