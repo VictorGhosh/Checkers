@@ -1,6 +1,5 @@
 com\GameLogic\Board.class
 com\GameLogic\Player.class
-com\Controller\App.class
 com\GameLogic\Game.class
 com\GameLogic\GameDebugger.class
 com\GameLogic\King.class
