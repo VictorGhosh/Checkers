@@ -1,6 +1,7 @@
 package com.GameLogic;
 
 import java.util.Arrays;
+import com.google.gson.Gson;
 
 public class Board {
     // Top left 0,0 [row][column]
@@ -11,6 +12,15 @@ public class Board {
      */
     public Board() {
         this.squares = new GamePiece[8][8];
+    }
+
+    /**
+     * Set board state from Json file as stiring. For loading games from database
+     * @param boardJson
+     */
+    public Board(String boardJson) {
+        Gson gson = new Gson();
+        this.squares = gson.fromJson(boardJson, GamePiece[][].class);
     }
 
     /**
@@ -292,6 +302,11 @@ public class Board {
 
     public GamePiece[][] getBoard() {
         return Arrays.copyOf(squares, squares.length);
+    }
+
+    public String getJson() {
+        Gson gson = new Gson();
+        return gson.toJson(getBoard());
     }
 
     /**
